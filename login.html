@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1b1566;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-radius: 8px;
+            width: 300px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Form -->
+    <div class="container">
+        <h2>Library Login</h2>
+        
+        <!-- Role Selection -->
+        <select id="role">
+            <option value="student">Student</option>
+            <option value="librarian">Librarian</option>
+        </select>
+
+        <input type="text" id="username" placeholder="Enter Username" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
+        <button onclick="login()">Login</button>
+        <p id="error-message"></p>
+    </div>
+
+    <script>
+        function login() {
+            let role = document.getElementById("role").value;
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let errorMessage = document.getElementById("error-message");
+
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `role=${role}&username=${username}&password=${password}`
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;  // Redirect to dashboard if login is successful
+                } else {
+                    return response.text();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    errorMessage.innerText = "Invalid username or password!";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                errorMessage.innerText = "Something went wrong!";
+            });
+        }
+    </script>
+
+</body>
+</html>

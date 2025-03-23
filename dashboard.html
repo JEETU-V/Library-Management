@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            width: 100%;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0;
+            position: relative;
+            margin-top: 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+        }
+        .navbar a:hover {
+            background: #34495e;
+            border-radius: 5px;
+        }
+        .content {
+            text-align: center;
+        }
+        .hero {
+            margin-top: 50px;
+        }
+        .book-section {
+            margin-top: 50px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        /* Styling for book search */
+        .search-container {
+            margin: 20px auto;
+            width: 50%;
+        }
+        .book-list {
+            list-style: none;
+            padding: 0;
+        }
+        .book-list li {
+            padding: 10px;
+            background: #f4f4f4;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .book-list li:hover {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#">Home</a>
+        <a href="#books">Books</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="content">
+        <header>
+            <h1>Library Management System</h1>
+        </header>
+        
+        <section class="hero">
+            <h1>Welcome to the Library</h1>
+            <p>Explore thousands of books and manage your library with ease.</p>
+            <div>
+                <a href="{{ url_for('books_page') }}">Books</a>
+
+            </div>
+        </section>
+        
+        <!-- Book Search Section -->
+        <section id="books" class="book-section">
+            <h2>Search Books</h2>
+            <div class="search-container">
+                <input type="text" id="searchBox" placeholder="Search books..." oninput="filterBooks()">
+            </div>
+            <ul id="bookList" class="book-list"></ul>
+            <p id="notFoundMessage" style="display: none; color: red;">No books found!</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 Library Management System</p>
+        </footer>
+    </div>
+
+    <script>
+        function filterBooks() {
+            let searchValue = document.getElementById("searchBox").value.trim();
+
+            if (searchValue === "") {
+                document.getElementById("bookList").innerHTML = "";
+                return;
+            }
+
+            fetch(`/search?query=${searchValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    let bookList = document.getElementById("bookList");
+                    bookList.innerHTML = "";
+
+                    if (Object.keys(data).length === 0) {
+                        document.getElementById("notFoundMessage").style.display = "block";
+                    } else {
+                        document.getElementById("notFoundMessage").style.display = "none";
+
+                        for (let book in data) {
+                            let li = document.createElement("li");
+                            let link = document.createElement("a");
+                            link.href = data[book];
+                            link.target = "_blank";
+                            link.textContent = book;
+                            li.appendChild(link);
+                            bookList.appendChild(li);
+                        }
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

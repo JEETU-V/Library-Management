@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Books</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Library Books</h1>
+    <input type="text" id="searchBox" placeholder="Search for a book..." onkeyup="filterBooks()">
+    <ul id="bookList"></ul>
+
+    <script>
+        async function filterBooks() {
+            let searchValue = document.getElementById("searchBox").value.toLowerCase();
+            let response = await fetch(`/search?query=${searchValue}`);
+            let books = await response.json();
+
+            let bookList = document.getElementById("bookList");
+            bookList.innerHTML = "";  
+
+            Object.keys(books).forEach(book => {
+                let li = document.createElement("li");
+                li.textContent = book;
+                li.onclick = function() { window.open(books[book], "_blank"); };
+                bookList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
