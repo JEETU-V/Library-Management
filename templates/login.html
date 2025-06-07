@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System - Login</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #E3F2FD;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #1E3A5F;
+            padding: 30px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border-radius: 12px;
+            width: 350px;
+            max-width: 90%;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #FFFFFF;
+            font-size: 24px;
+        }
+
+        select, input {
+            width: 95%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #0D47A1;
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            background: #90CAF9;
+            cursor: not-allowed;
+        }
+
+        #error-message {
+            color: #FF5252;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Library Login</h2>
+    
+        <form id="loginForm">
+            <select id="role" name="role">
+                <option value="student">Student</option>
+                <option value="librarian">Librarian</option>
+            </select>
+    
+            <input type="text" id="username" name="username" placeholder="Enter Username" required>
+            <input type="password" id="password" name="password" placeholder="Enter Password" required>
+            <button type="button" id="loginBtn" onclick="login()">Login</button>
+        </form>
+        
+        <p id="error-message"></p>
+    </div>
+    
+    <script>
+        async function login() {
+            let role = document.getElementById("role").value;
+            let username = document.getElementById("username").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let errorMessage = document.getElementById("error-message");
+    
+            if (!username || !password) {
+                errorMessage.innerText = "Please enter both username and password.";
+                return;
+            }
+    
+            let formData = new URLSearchParams();
+            formData.append("role", role);
+            formData.append("username", username);
+            formData.append("password", password);
+    
+            try {
+                let response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: formData
+                });
+    
+                let result = await response.text();
+    
+                if (response.ok) {
+                    window.location.href = "/dashboard";  // Redirect on success
+                } else {
+                    errorMessage.innerText = result; // Show error message
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                errorMessage.innerText = "Login failed. Please try again.";
+            }
+        }
+    </script>
+    
+
+</body>
+</html>

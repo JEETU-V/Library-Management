@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #F4F8FB;
+            color: #333;
+        }
+
+        .navbar {
+            width: 100%;
+            background: #1E3A5F;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: 0.3s ease-in-out;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .content {
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .hero {
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+            border-radius: 10px;
+            margin: 50px auto;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #FFC107;
+            color: #333;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: 600;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background: #FFA000;
+            transform: scale(1.05);
+        }
+
+        .book-section {
+            margin-top: 50px;
+        }
+
+        .search-container {
+            margin: 20px auto;
+            width: 50%;
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: 0.3s ease-in-out;
+        }
+
+        #searchBox:focus {
+            border-color: #1565C0;
+            box-shadow: 0 0 8px rgba(21, 101, 192, 0.3);
+        }
+
+        .book-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .book-list li {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s ease-in-out;
+        }
+
+        .book-list li:hover {
+            background: #E3F2FD;
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #1E3A5F;
+            color: white;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="#">Home</a>
+        <a href="{{ url_for('books_page') }}">Books</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>Library Management System</h1>
+        </header>
+        
+        <section class="hero">
+            <h1>Welcome to the Library</h1>
+            <p>Explore thousands of books and manage your library with ease.</p>
+            <a href="{{ url_for('books_page') }}" class="btn">Browse Books</a>
+        </section>
+        
+        <section id="books" class="book-section">
+            <h2>Search Books</h2>
+            <div class="search-container">
+                <input type="text" id="searchBox" placeholder="Search books..." oninput="filterBooks()">
+            </div>
+            <ul id="bookList" class="book-list"></ul>
+            <p id="notFoundMessage" style="display: none; color: red;">No books found!</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 Library Management System</p>
+        </footer>
+    </div>
+
+    <script>
+        function filterBooks() {
+            let searchValue = document.getElementById("searchBox").value.trim();
+
+            if (searchValue === "") {
+                document.getElementById("bookList").innerHTML = "";
+                return;
+            }
+
+            fetch(`/search?query=${searchValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    let bookList = document.getElementById("bookList");
+                    bookList.innerHTML = "";
+
+                    if (Object.keys(data).length === 0) {
+                        document.getElementById("notFoundMessage").style.display = "block";
+                    } else {
+                        document.getElementById("notFoundMessage").style.display = "none";
+
+                        for (let book in data) {
+                            let li = document.createElement("li");
+                            let link = document.createElement("a");
+                            link.href = data[book];
+                            link.target = "_blank";
+                            link.textContent = book;
+                            link.style.textDecoration = "none";
+                            link.style.color = "#1565C0";
+                            link.style.fontWeight = "600";
+                            li.appendChild(link);
+                            bookList.appendChild(li);
+                        }
+                    }
+                });
+        }
+    </script>
+
+</body>
+</html>
